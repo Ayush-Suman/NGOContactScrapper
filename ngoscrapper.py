@@ -3,21 +3,21 @@ from bs4 import BeautifulSoup
 from pyexcel_xls import save_data
 from collections import OrderedDict
 
-states = []
+states = [u'andaman-nicobar', u'andhra-pradesh', u'arunachal-pradesh', u'assam', u'bihar', u'chandigarh', u'chhattisgarh', u'dadra-nagar-haveli', u'daman-and-diu', u'delhi', u'goa', u'gujarat', u'haryana', u'himachal-pradesh', u'jammu-and-kashmir', u'jharkhand', u'karnataka', u'kerala', u'ladakh', u'lakshadweep', u'madhya-pradesh', u'maharashtra', u'mumbai', u'manipur', u'meghalaya', u'mizoram', u'nagaland', u'orissa', u'pondicherry', u'punjab', u'rajasthan', u'sikkim', u'tamil-nadu', u'telangana', u'tripura', u'uttarakhand', u'uttar-pradesh', u'west-bengal']
 
-url = 'https://ngosindia.com/contact-us/'
-page = requests.get(url)
-soup = BeautifulSoup(page.text, "html.parser")
-div = soup.find_all('div', 'ngo-blockcontent')
+#url = 'https://ngosindia.com/contact-us/'
+#page = requests.get(url)
+#soup = BeautifulSoup(page.text, "html.parser")
+#div = soup.find_all('div', 'ngo-blockcontent')
 #print(str(div).replace(',', '\n\n'))
-div = div[8].find('div')
-ul = div.find('ul')
-lis = ul.find_all('li')
-for li in lis:
-    strong = li.find('strong')
-    a = strong.find('a', href=True)
-    states.append(a['href'].split('/')[3])
-print(states)
+#div = div[8].find('div')
+#ul = div.find('ul')
+#lis = ul.find_all('li')
+#for li in lis:
+#    strong = li.find('strong')
+#    a = strong.find('a', href=True)
+#    states.append(a['href'].split('/')[3])
+#print(states)
 
 excel = "ngodata.xls"
 
