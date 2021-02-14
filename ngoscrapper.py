@@ -3,15 +3,28 @@ from bs4 import BeautifulSoup
 from pyexcel_xls import save_data
 from collections import OrderedDict
 
+states = []
+
+url = 'https://ngosindia.com/contact-us/'
+page = requests.get(url)
+soup = BeautifulSoup(page.text, "html.parser")
+div = soup.find_all('div', 'ngo-blockcontent')
+#print(str(div).replace(',', '\n\n'))
+div = div[8].find('div')
+ul = div.find('ul')
+lis = ul.find_all('li')
+for li in lis:
+    strong = li.find('strong')
+    a = strong.find('a', href=True)
+    states.append(a['href'].split('/')[3])
+print(states)
+
 excel = "ngodata.xls"
 
 data = OrderedDict()
 listdata = [["Name", "State", "Link"]]
 
-states = [
-    'delhi',
-    'bihar'
-]
+
 
 for state in states:
     i = 1
@@ -22,7 +35,7 @@ for state in states:
             soup = BeautifulSoup(page.text, "html.parser")
             ul = soup.find('ul', class_ = 'lcp_catlist')
             lis = ul.find_all('li')
-            if len(lis) == 0 or i==2:
+            if len(lis) == 0:
                 raise Exception
             for li in lis:
                 a = li.find('a', href = True)
