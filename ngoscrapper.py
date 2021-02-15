@@ -79,3 +79,70 @@ for singledata in listdata:
     data.update({"Sheet1": contactlistdata})
     save_data(excel, data)
 print("Contacts Saved")
+
+
+import asyncio
+import aiohttp
+
+
+links = []
+excel = "ngodata.xls"
+
+
+async def getcontacts(name, state, url, session:aiohttp.ClientSession, **kwargs)->dict:
+    print("Requesting for "+url)
+    try:
+        resp = await session.request('GET', url=url, **kwargs)
+        text = await resp.text()
+        #print(text)
+        soup = BeautifulSoup(text, "html.parser")
+        div = soup.find_all('div', class_ = 'npos-postcontent')
+        print("Div: "+str(div))
+        p = div[1].find('p')
+        texts = str(p).split('<br/>')
+        #print(texts)
+        email = ''
+        mobile = ''
+        for text in texts:
+            text = text.replace('\n', '')
+            print("Text: "+text)
+            if text.startswith('Email'):
+                email = text.split(':')[1]
+                print("Email: "+email.strip())
+            elif text.startswith('Mobile'):
+                mobile = text.split(':')[1]
+    except:
+        email = ''
+        mobile = ''
+    finally:
+        dic = {"Name": name, "State":state, "Link":url, "Email": email, "Mob": mobile}
+        return dic
+
+async def getallcontacts(**kwargs):
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        datasheet:list = data["Sheet1"]
+        datasheet.remove(["Name", "State", "Link"])
+        for c in datasheet:
+            tasks.append(getcontacts(session=session, name=c[0], state=c[1], url=c[2], **kwargs))
+        #print(tasks)
+        htmls = await asyncio.gather(*tasks)
+        print("Gathering Done")
+        #print(htmls)
+        return htmls
+
+loop = asyncio.get_event_loop()
+try:
+    final_data = loop.run_until_complete(getallcontacts())
+finally:
+    loop.close()
+
+final_list = ["Name", "State", "Link", "Email", "Mobile"]
+
+for singledata in final_data:
+    final_list.append([singledata['Name'],singledata['State'],singledata['Link'],singledata['Email'],singledata['Mob']])
+
+excel = "ngocontactdata.xls"
+data.update({"Sheet1": final_list})
+save_data(excel, data)
+
